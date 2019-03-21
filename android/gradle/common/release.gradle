@@ -1,0 +1,28 @@
+
+task verifyRelease(type: VerifyReleaseTask) {
+    group 'Release'
+    description 'Verifies the required Environment Variables are set.'
+}
+
+class VerifyReleaseTask extends DefaultTask {
+    @TaskAction
+    def verifyRelease() {
+
+        String[] envVars = [ 
+            "KEYSTORE_ENCODED", 
+            "KEYSTORE_PASSWORD", 
+            "KEY_ALIAS",
+            "KEY_ALIAS_PASSWORD"
+        ]
+
+        for (var in envVars) {
+            String value = System.getenv(var)
+            if (value == null || value.isEmpty() ) {
+                throw new Exception("$var variable not set")
+            }
+        }
+
+    println "All requred environment variables appear to be set."
+
+    }
+}

@@ -1,0 +1,25 @@
+apply from: "$rootDir/gradle/common/sonarqube.gradle"
+
+project.android {
+
+    buildTypes {
+        debug {
+            testCoverageEnabled = true
+        }
+    }
+
+    testOptions {
+        unitTests.all {
+            jacoco {
+                includeNoLocationClasses = true
+            }
+        }
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.android.lint.report", "${project.buildDir}/reports/lint-results.xml"
+    }
+}
+

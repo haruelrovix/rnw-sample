@@ -1,0 +1,56 @@
+/*
+ * Adds Sonarqube functionality.
+ *
+ * To use this build file you MUST use com.android.support.test:runner:0.5' or newer
+ *
+ * With code from:
+ * https://overflow.buffer.com/2017/01/16/android-test-sonarqube/
+ * https://room-15.github.io/blog/2016/01/21/Static-code-quality-measurements-with-SonarQube-Jacoco-and-UnitTests/
+ * https://github.com/gabrie-allaigre/sonar-gitlab-plugin
+ */
+apply from: "$rootDir/gradle/common/environment.gradle"
+
+apply plugin: 'jacoco'
+apply plugin: 'org.sonarqube'
+
+/**
+ * Cleans up empty coverage files that are created by the emulator even if no tests run.
+ * Sonarqube will throw an error when these are encountered
+ */
+task cleanEmptyCoverage() {
+    fileTree(dir: project.buildDir, includes: ["**/*.exec", "**/*.ec"]).each { File file ->
+        if (file.file && file.size() == 0) {
+            file.delete()
+        }
+    }
+}
+
+task checkSonarqubeSetup {
+    group 'Reporting'
+    description 'Checks Sonarqube Env Setup'
+
+    doLast {
+        for ( String variable in ["INSPECT_URL", "INSPECT_USER", "INSPECT_PASSWORD"] ) {
+            def value = getPropertyOrVariable(variable)
+            if ( value == null || value.isEmpty() ){
+                throw new Exception("ERROR: Sonarqube requires variable [$variable] to be set.")
+            }
+        }
+        System.out.println "SUCCESS: Sonarqube appears to be ready to go."
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.host.url", getPropertyOrVariable("INSPECT_URL")
+        property "sonar.login",    getPropertyOrVariable("INSPECT_USER")
+        property "sonar.password", getPropertyOrVariable("INSPECT_PASSWORD")
+
+        property "sonar.java.binaries", "${project.buildDir}/intermediates/classes"
+        property "sonar.jacoco.reportPaths", fileTree(dir:project.buildDir, includes: ["**/*.exec", "**/*.ec"])
+        property "sonar.verbose", "true"
+    }
+}
+
+project.tasks['sonarqube'].dependsOn(checkSonarqubeSetup, lint, cleanEmptyCoverage)
+

@@ -1,0 +1,38 @@
+{
+  "extends": ["airbnb", "plugin:jest/recommended"],
+  "parser": "babel-eslint",
+  "plugins": ["jest"],
+  "rules": {
+    "indent": ["error", 4, { "SwitchCase": 1 }], // 4 spaces indent
+    "comma-dangle": ["error", "only-multiline"], // Don't enforce comma-dangle rule for multilines
+    "max-len": ["error", { "code": 120 }], // 120 character max length limit
+
+    "arrow-parens": ["error", "always"],
+    "arrow-body-style": ["error", "as-needed"],
+
+    "import/no-named-as-default": ["off"],
+    "import/no-named-as-default-member": ["off"],
+    "import/prefer-default-export": ["off"],
+
+    "object-curly-newline": ["error", {"consistent": true}],
+    "no-shadow": ["off"], // @TODO confirm this is safe to turn off
+
+    "react/no-string-refs": ["off"],
+    "quote-props": ["error", "consistent"],
+
+    "no-prototype-builtins": ["off"], // allows for hasOwnProperty on objects
+    "no-restricted-globals": ["off"], // allows for isNaN
+    "no-restricted-syntax": ["warn", "BinaryExpression[operator='in']"],
+    "no-plusplus": ["warn", { "allowForLoopAfterthoughts": true }],
+
+    "object-shorthand": ["off"],
+    "import/no-cycle": ["off"],
+
+    "react/jsx-indent": ["error", 4], // JSX - 4 spaces indent
+    "react/jsx-indent-props": ["error", 4], // JSX props - 4 spaces indent
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }], // Allow JSX in .js & .jsx files
+    "jsx-quotes": ["error", "prefer-double"], // JSX quotes - use single quotes
+
+    "jest/prefer-to-have-length": ["off"]
+  }
+}

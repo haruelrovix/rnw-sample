@@ -1,0 +1,55 @@
+/**
+ * Common code for publish.gradle and publish-android.gradle. Currently only validation at this point
+ */
+
+//run this before publishing to verify that publishing variables exist
+tasks.withType(PublishToMavenRepository) { it.dependsOn verifyPublish }
+
+//declare it as a task
+task verifyPublish(type: VerifyPublishTask, group: 'Publish')
+
+/**
+ * Custom task that verifies that publishing environment variables are properly set
+ */
+class VerifyPublishTask extends DefaultTask {
+    @TaskAction
+    def verifyPublish() {
+        //get variables from system
+        String mavenUser = System.getenv("MAVEN_USER")
+        String mavenPassword = System.getenv("MAVEN_PASSWORD")
+        String publishUrl = System.getenv("PUBLISH_URL")
+
+        //verify that they all exist. throw if not
+        if(mavenUser == null || mavenUser.isEmpty() ){
+            throw new Exception('MAVEN_USER variable not set')
+        }
+        else if(mavenPassword == null || mavenPassword.isEmpty()){
+            throw new Exception('MAVEN_PASSWORD variable not set')
+        }
+        else if(publishUrl == null || publishUrl.isEmpty()){
+            throw new Exception('PUBLISH_URL variable not set')
+        }
+    }
+}
+
+/**
+ * Reusable code for specifying what maven repo to publish to
+ * @return
+ */
+def mavenPublishRepo(){
+    //this specifically checks for environment variables, developers should not be publishing from their local machines
+    String username = System.getenv("MAVEN_USER")
+    String password = System.getenv("MAVEN_PASSWORD")
+    String publishUrl = System.getenv("PUBLISH_URL")
+    project.publishing.repositories.maven {
+        url publishUrl
+        credentials {
+            credentials.username username
+            credentials.password password
+        }
+    }
+}
+
+ext {
+    mavenPublishRepo = this.&mavenPublishRepo
+}

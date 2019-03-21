@@ -1,0 +1,71 @@
+image: registry.sfcc.tech:5000/android/ci/react-native-android-builder:latest
+
+stages:
+  - lint
+  - test
+  - build
+
+lint:
+  stage: lint
+  image: node:10.15
+  script:
+    - yarn
+    - yarn lint
+
+test:
+  stage: test
+  image: node:10.15
+  script:
+    - yarn
+    - yarn jest --ci --coverage --detectOpenHandles --maxWorkers=10
+  coverage: /^All files\s+\|\s+\d+\.*\d*\s+\|\s*(\d+\.*\d*)/
+  artifacts:
+    name: "Tests-${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}_${CI_COMMIT_SHA}"
+    when: always
+    expire_in: 1 weeks
+    paths:
+      - "coverage/"
+
+.build_template: &install_dependencies
+  before_script:
+    - yarn install
+    #   - bash -c react-native bundle --platform android --dev false --entry-file index.js --bundle-output ./android/app/src/main/assets/index.android.bundle --assets-dest ./android/app/src/main/res
+    - bash -c react-native start
+
+.artifact_template: &save_artifacts
+  artifacts:
+    name: "day-tracer"
+    untracked: false
+    expire_in: 30 days
+    paths:
+      - "**"
+
+build:debug:
+  stage: build
+  except:
+    - tags
+    - master
+  <<: *install_dependencies
+  script:
+    - yarn build-android-debug
+  artifacts:
+    name: "Build-Debug-${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}_${CI_COMMIT_SHA}"
+    when: always
+    expire_in: 1 weeks
+    paths:
+      - "android/app/build/outputs/**"
+
+build:release:
+  stage: build
+  only:
+    - tags
+    - /^v\d{1,}[.]\d{1,3}[.]\d{1,3}$/
+  <<: *install_dependencies
+  script:
+    - echo $RELEASE_KEYSTORE_ENCODED > $CI_PROJECT_DIR/release_keystore.base64
+    - base64 --decode $CI_PROJECT_DIR/release_keystore.base64 > $CI_PROJECT_DIR/release_keystore.jks
+    - rm $CI_PROJECT_DIR/release_keystore.base64
+    - sha1sum $CI_PROJECT_DIR/release_keystore.jks
+    - yarn build-android-release
+  <<: *save_artifacts
+

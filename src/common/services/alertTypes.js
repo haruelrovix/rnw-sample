@@ -1,0 +1,18 @@
+/**
+ * Defines the alertType constants
+ */
+export const alertTypes = {
+    BAD_REQUEST: 'BAD_REQUEST',
+    INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
+    VALIDATION_ERROR: 'VALIDATION_ERROR',
+    FORBIDDEN: 'FORBIDDEN',
+    GENERIC_ERROR: 'GENERIC_ERROR',
+    OFFLINE_ERROR: 'OFFLINE_ERROR',
+    ERROR: 'ERROR',
+    WARNING: 'WARNING',
+    CONFIRM_ACTION: 'CONFIRM_ACTION'
+};
+
+export const toastTypes = {
+    LOADING: 'LOADING'
+};

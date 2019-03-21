@@ -1,0 +1,13 @@
+# Ignore Jest code coverage directory
+coverage/*
+scripts/additionalDependencies.js
+build/*
+dist/*
+serviceWorker.js
+scripts/*
+config/*
+coverage/*
+coverageNative/*
+coverageWeb/*
+src/common/test-data/*
+__tests__

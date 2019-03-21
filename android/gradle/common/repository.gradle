@@ -1,0 +1,61 @@
+apply from: "$rootDir/gradle/common/environment.gradle"
+
+/**
+ * Reusable code for using a proxy repository.
+ * Checks local environment for PROXY_USER and PROXY_PASSWORD variables.
+ * These can be set in a local.properties file in your project
+ * proxyUrl is a URL as a String that should be something like: https://registry.sfcc.tech/repository/jcenter-proxy/
+ */
+repositories.ext.proxyRepo = { proxyUrl ->
+    String username = getPropertyOrVariable("PROXY_USER")
+    String password = getPropertyOrVariable("PROXY_PASSWORD")
+    repositories.maven {
+        credentials {
+            credentials.username username
+            credentials.password password
+        }
+        url = proxyUrl
+    }
+}
+
+/**
+ * Reusable code for using a proxy repository.
+ * Checks local environment for PROXY_USER and PROXY_PASSWORD variables.
+ * These can be set in a local.properties file in your project
+ * proxyUrl is a URL as a String that should be something like: https://registry.sfcc.tech/repository/jcenter-proxy/
+ */
+project.buildscript.repositories.ext.proxyRepo = { proxyUrl ->
+    String username = getPropertyOrVariable("PROXY_USER")
+    String password = getPropertyOrVariable("PROXY_PASSWORD")
+    project.buildscript.repositories.maven {
+        credentials {
+            credentials.username username
+            credentials.password password
+        }
+        url = proxyUrl
+    }
+}
+
+/**
+ * List of available proxy repositories.
+ * Use: `proxyRepo(androidRepoProxy)`
+ * Will throw an exception if PROXY_REGISTRY is not set as env var or in local.properties.
+ */
+ext {
+    final String proxyRegistryEnvVar = 'PROXY_REGISTRY'
+    final String proxyRegistry = getPropertyOrVariable(proxyRegistryEnvVar)
+
+    if ( proxyRegistry == null || proxyRegistry.isEmpty() ) {
+        throw new Exception("$proxyRegistryEnvVar variable not set")
+    }
+
+    androidRepoProxy    = "$proxyRegistry/android-google-proxy/"
+    mavenCentralProxy   = "$proxyRegistry/repository/maven-central/"
+    mavenSnapshotsProxy = "$proxyRegistry/maven-snapshots/"
+    mavenReleasesProxy  = "$proxyRegistry/maven-releases/"
+    jCenterProxy        = "$proxyRegistry/jcenter-proxy/"
+    springPluginsProxy  = "$proxyRegistry/spring-plugins-proxy/"
+    gradlePluginsProxy  = "$proxyRegistry/gradle-plugins-proxy/"
+
+    mavenPublishRepo = this.&mavenPublishRepo
+}

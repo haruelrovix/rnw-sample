@@ -1,0 +1,28 @@
+/**
+ * Searches both environment variables and a local.properties file for a property and returns it as a String
+ * @param propertyName Name of property to find
+ * @return Found property, or null if not found
+ */
+String getPropertyOrVariable(String propertyName) {
+    
+    //check for environment variable. Use that first if it exists. If not, check local.properties for it
+    String property = System.getenv(propertyName)
+    if (property != null) {
+        //return from environment variable
+        return property
+    } else {
+        try {
+            Properties properties = new Properties()
+            //check for local.properties file
+            properties.load(project.rootProject.file('local.properties').newDataInputStream())
+            return properties.getProperty(propertyName)
+        } catch (IOException e) {
+            logger.log(LogLevel.ERROR, String.format("Failed to load property %s. Error: %s", propertyName, e.getMessage()))
+            return null
+        }
+    }
+}
+
+ext {
+    getPropertyOrVariable = this.&getPropertyOrVariable
+}

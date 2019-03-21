@@ -1,0 +1,45 @@
+/**
+ * Returns the version string to use based off of the current branch
+ * and current tag.
+ *
+ * @param defaultVersion default version to use if not specified
+ *        by the build server
+ * @return build version string
+ */
+public static String getVersion(String defaultVersion) {
+    if (System.getenv("CI_COMMIT_TAG")) {
+        //this is a tag, strip off any leading "v"
+        //and use the tag version
+        return System.getenv("CI_COMMIT_TAG").replaceAll("(?i)^v", "")
+    }
+
+    if (System.env.CI_COMMIT_REF_NAME != null && System.env.CI_COMMIT_REF_NAME != "master") {
+        defaultVersion += "-" + System.env.CI_COMMIT_REF_NAME
+    }
+
+    return defaultVersion + "-SNAPSHOT"
+}
+
+/**
+ * Retrieves the version code for the current build.
+ * The version code is calculated from parsing the build count from
+ * the server and adding it to the passed version code
+ *
+ * @param versionCode the base version code to use, this will be added
+ *                    to the build number from the ci server
+ * @return calculated versioncode
+ */
+public static int getVersionCode(int versionCode = 0) {
+    if (System.getenv("CI_JOB_ID")) {
+        versionCode += Integer.parseInt(System.getenv("CI_JOB_ID"))
+    }
+
+    return versionCode
+}
+
+ext {
+    getVersion = this.&getVersion
+    _getVersion = this.&getVersion
+    getVersionCode = this.&getVersionCode
+    _getVersionCode = this.&getVersionCode
+}

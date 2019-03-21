@@ -1,0 +1,19 @@
+apply from: "$rootDir/gradle/common/publish-common.gradle"
+
+apply plugin: 'digital.wup.android-maven-publish'
+
+publishing {
+    publications {
+        android.libraryVariants.all { variant ->
+
+            "maven${variant.name.capitalize()}Aar"(MavenPublication) {
+                from components.findByName("android${variant.name.capitalize()}")
+                groupId groupName
+                artifactId artifactId
+                version rootProject.ext.version
+            }
+        }
+    }
+
+    mavenPublishRepo()
+}

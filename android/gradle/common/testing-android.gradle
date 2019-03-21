@@ -1,0 +1,21 @@
+//Modify the project's android configuration
+project.android {
+    testOptions {
+        unitTests.all {
+
+            //maxParallelForks = Runtime.getRuntime().availableProcessors()/2+1
+            //forkEvery = 5
+
+            // All the usual Gradle options.
+            testLogging {
+                exceptionFormat 'full'
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+                outputs.upToDateWhen {false}
+                showCauses true
+                showExceptions true
+                showStackTraces true
+                showStandardStreams true
+            }
+        }
+    }
+}

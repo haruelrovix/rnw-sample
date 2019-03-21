@@ -1,0 +1,29 @@
+/**
+ * Common scripts for publishing Java artifacts. See README.md for instructions on how to use this.
+ */
+apply plugin: 'maven-publish'
+apply from: "$rootDir/gradle/common/publish-common.gradle"
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+publishing {
+    project.version = rootProject.ext.version
+
+    publications {
+        release(MavenPublication) {
+            groupId groupName
+            artifactId artifactId
+            version "$version"
+            from components.java
+
+            artifact(sourcesJar) {
+                classifier = 'sources'
+            }
+        }
+    }
+
+    mavenPublishRepo()
+}

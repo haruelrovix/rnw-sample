@@ -110,6 +110,7 @@ const NavItem = ({ selected, name, icon, onPress, theme }) => (
                 name={icon}
                 color={theme.sidebarIconsColor}
                 containerStyle={selected ? theme.sidebarIconActive : theme.sidebarIcon}
+                type='material'
             />
             <Text style={[navItemStyles.text, theme.text, theme.sidebarText]}>
                 {name}

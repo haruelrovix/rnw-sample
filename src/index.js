@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 // Generate required css
-import iconFont from 'react-native-vector-icons/dist/MaterialIcons';
+import iconFont from 'react-native-vector-icons/Fonts/MaterialIcons.ttf';
 
 import App from './App';
 
